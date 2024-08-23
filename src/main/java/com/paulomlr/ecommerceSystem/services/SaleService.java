@@ -45,9 +45,9 @@ public class SaleService {
 
     public Sale update(UUID id, Sale obj) {
         try {
-            Sale Sale = saleRepository.getReferenceById(id);
-            updateData(Sale, obj);
-            return saleRepository.save(Sale);
+            Sale sale = saleRepository.getReferenceById(id);
+            updateData(sale, obj);
+            return saleRepository.save(sale);
         }catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(id);
         }

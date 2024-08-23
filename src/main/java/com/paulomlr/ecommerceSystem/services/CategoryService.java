@@ -1,7 +1,7 @@
 package com.paulomlr.ecommerceSystem.services;
 
-import com.paulomlr.ecommerceSystem.domain.Product;
-import com.paulomlr.ecommerceSystem.repositories.ProductRepository;
+import com.paulomlr.ecommerceSystem.domain.Category;
+import com.paulomlr.ecommerceSystem.repositories.CategoryRepository;
 import com.paulomlr.ecommerceSystem.services.exceptions.DatabaseException;
 import com.paulomlr.ecommerceSystem.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,27 +15,27 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class ProductService {
-    
+public class CategoryService {
+
     @Autowired
-    private ProductRepository productRepository;
+    private CategoryRepository categoryRepository;
 
-    public List<Product> findAll() {
-        return productRepository.findAll();
+    public List<Category> findAll() {
+        return categoryRepository.findAll();
     }
 
-    public Product findById(UUID id) {
-        Optional<Product> product = productRepository.findById(id);
-        return product.orElseThrow(() -> new ResourceNotFoundException(id));
+    public Category findById(UUID id) {
+        Optional<Category> category = categoryRepository.findById(id);
+        return category.orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
-    public Product insert(Product product){
-        return productRepository.save(product);
+    public Category insert(Category category){
+        return categoryRepository.save(category);
     }
 
     public void delete(UUID id){
         try {
-            productRepository.deleteById(id);
+            categoryRepository.deleteById(id);
         }catch (EmptyResultDataAccessException e) {
             throw new ResourceNotFoundException(id);
         }catch (DataIntegrityViolationException e) {
@@ -43,19 +43,17 @@ public class ProductService {
         }
     }
 
-    public Product update(UUID id, Product obj) {
+    public Category update(UUID id, Category obj) {
         try {
-            Product product = productRepository.getReferenceById(id);
-            updateData(product, obj);
-            return productRepository.save(product);
+            Category category = categoryRepository.getReferenceById(id);
+            updateData(category, obj);
+            return categoryRepository.save(category);
         }catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(id);
         }
     }
 
-    private void updateData(Product product, Product obj) {
-        product.setName(obj.getName());
-        product.setPrice(obj.getPrice());
-        product.setProductStatus(obj.getProductStatus());
+    private void updateData(Category category, Category obj) {
+        category.setName(obj.getName());
     }
 }

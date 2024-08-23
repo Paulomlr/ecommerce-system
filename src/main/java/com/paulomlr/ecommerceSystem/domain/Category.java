@@ -1,10 +1,7 @@
 package com.paulomlr.ecommerceSystem.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,6 +18,8 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "category_id")
     private UUID categoryId;
+
+    @Setter
     private String name;
 
     @ManyToMany(mappedBy = "categories")
