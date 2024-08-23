@@ -2,10 +2,7 @@ package com.paulomlr.ecommerceSystem.domain;
 
 import com.paulomlr.ecommerceSystem.domain.enums.UserRole;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +19,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id")
     private UUID userId;
+
+    @Setter
     private String login;
+
+    @Setter
     private String password;
     private UserRole role;
 
