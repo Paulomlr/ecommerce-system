@@ -1,5 +1,6 @@
 package com.paulomlr.ecommerceSystem.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.paulomlr.ecommerceSystem.domain.pk.ProductSalePK;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -24,5 +25,13 @@ public class ProductSale {
         id.setSale(sale);
         this.quantity = quantity;
         this.price = price;
+    }
+
+    public Sale getSale(){
+        return id.getSale();
+    }
+
+    public Product getProduct(){
+        return id.getProduct();
     }
 }

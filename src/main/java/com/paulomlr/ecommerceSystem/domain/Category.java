@@ -6,9 +6,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
-@Entity
+@Entity(name = "tb_category")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,4 +22,7 @@ public class Category {
     @Column(name = "category_id")
     private UUID categoryId;
     private String name;
+
+    @ManyToMany(mappedBy = "categories")
+    private Set<Product> products = new HashSet<>();
 }

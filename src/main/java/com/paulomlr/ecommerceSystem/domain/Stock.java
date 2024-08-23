@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "tb_stock")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,4 +18,8 @@ public class Stock {
     @Column(name = "stock_id")
     private Long stockId;
     private Integer quantity;
+
+    @OneToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 }

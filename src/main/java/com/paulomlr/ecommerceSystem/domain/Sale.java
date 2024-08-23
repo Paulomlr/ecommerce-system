@@ -8,9 +8,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
-@Entity
+@Entity(name = "tb_sale")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,4 +24,11 @@ public class Sale {
     private UUID saleId;
     private Instant saleDate;
     private SaleStatus saleStatus;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User name;
+
+    @OneToMany(mappedBy = "id.sale")
+    private Set<ProductSale> items = new HashSet<>();
 }
