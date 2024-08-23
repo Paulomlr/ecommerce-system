@@ -2,10 +2,7 @@ package com.paulomlr.ecommerceSystem.domain;
 
 import com.paulomlr.ecommerceSystem.domain.enums.SaleStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -23,6 +20,8 @@ public class Sale {
     @Column(name = "sale_id")
     private UUID saleId;
     private Instant saleDate;
+
+    @Setter
     private SaleStatus saleStatus;
 
     @ManyToOne
