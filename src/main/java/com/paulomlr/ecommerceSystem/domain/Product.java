@@ -2,10 +2,7 @@ package com.paulomlr.ecommerceSystem.domain;
 
 import com.paulomlr.ecommerceSystem.domain.enums.ProductStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,8 +19,14 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "product_id")
     private UUID productId;
+
+    @Setter
     private String name;
+
+    @Setter
     private Double price;
+
+    @Setter
     private ProductStatus productStatus;
 
     @OneToMany(mappedBy = "id.product")
