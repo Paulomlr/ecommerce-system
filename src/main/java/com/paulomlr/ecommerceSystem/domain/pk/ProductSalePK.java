@@ -1,5 +1,6 @@
 package com.paulomlr.ecommerceSystem.domain.pk;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.paulomlr.ecommerceSystem.domain.Product;
 import com.paulomlr.ecommerceSystem.domain.Sale;
 import jakarta.persistence.Embeddable;
@@ -20,6 +21,7 @@ public class ProductSalePK implements Serializable {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "sale_id")
     private Sale sale;

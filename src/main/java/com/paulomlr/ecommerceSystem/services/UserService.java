@@ -1,6 +1,11 @@
 package com.paulomlr.ecommerceSystem.services;
 
+import com.paulomlr.ecommerceSystem.domain.Product;
 import com.paulomlr.ecommerceSystem.domain.User;
+import com.paulomlr.ecommerceSystem.domain.dto.product.ProductRequestDTO;
+import com.paulomlr.ecommerceSystem.domain.dto.product.ProductResponseDTO;
+import com.paulomlr.ecommerceSystem.domain.dto.user.UserRequestDTO;
+import com.paulomlr.ecommerceSystem.domain.dto.user.UserResponseDTO;
 import com.paulomlr.ecommerceSystem.repositories.UserRepository;
 import com.paulomlr.ecommerceSystem.services.exceptions.DatabaseException;
 import com.paulomlr.ecommerceSystem.services.exceptions.ResourceNotFoundException;
@@ -20,13 +25,22 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<UserResponseDTO> findAll() {
+        return userRepository.findAll()
+                .stream()
+                .map(UserResponseDTO::new)
+                .toList();
     }
 
-    public User findById(UUID id) {
-        Optional<User> user = userRepository.findById(id);
-        return user.orElseThrow(() -> new ResourceNotFoundException(id));
+    public UserResponseDTO findById(UUID id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found. Id: " + id));
+        return new UserResponseDTO(user);
+    }
+
+    public User findCompleteUserById(UUID id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found. Id: " + id));
     }
 
     public User insert(User user){
@@ -34,27 +48,26 @@ public class UserService {
     }
 
     public void delete(UUID id){
-        try {
-            userRepository.deleteById(id);
-        }catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotFoundException(id);
-        }catch (DataIntegrityViolationException e) {
-            throw new DatabaseException(e.getMessage());
+        Optional<User> user = userRepository.findById(id);
+        if (user.isPresent()) {
+            userRepository.delete(user.get());
+        } else {
+            throw new ResourceNotFoundException("User not found. Id: " + id);
         }
     }
 
-    public User update(UUID id, User obj) {
-        try {
-            User user = userRepository.getReferenceById(id);
-            updateData(user, obj);
-            return userRepository.save(user);
-        }catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(id);
-        }
+    public UserResponseDTO update(UUID id, UserRequestDTO obj) {
+        return userRepository.findById(id)
+                .map(product -> {
+                    updateData(product, obj);
+                    User updateUser = userRepository.save(product);
+                    return new UserResponseDTO(updateUser);
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("User not found. Id: " + id));
     }
 
-    private void updateData(User user, User obj) {
-        user.setLogin(obj.getLogin());
-        user.setPassword(obj.getPassword());
+    private void updateData(User user, UserRequestDTO obj) {
+        user.setLogin(obj.login());
+        user.setPassword(obj.password());
     }
 }

@@ -1,6 +1,10 @@
 package com.paulomlr.ecommerceSystem.services;
 
 import com.paulomlr.ecommerceSystem.domain.Product;
+import com.paulomlr.ecommerceSystem.domain.dto.product.ProductRequestDTO;
+import com.paulomlr.ecommerceSystem.domain.dto.product.ProductResponseDTO;
+import com.paulomlr.ecommerceSystem.domain.enums.ProductStatus;
+import com.paulomlr.ecommerceSystem.domain.enums.SaleStatus;
 import com.paulomlr.ecommerceSystem.repositories.ProductRepository;
 import com.paulomlr.ecommerceSystem.services.exceptions.DatabaseException;
 import com.paulomlr.ecommerceSystem.services.exceptions.ResourceNotFoundException;
@@ -11,7 +15,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -20,13 +23,22 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    public List<Product> findAll() {
-        return productRepository.findAll();
+    public List<ProductResponseDTO> findAll() {
+        return productRepository.findAll()
+                .stream()
+                .map(ProductResponseDTO::new)
+                .toList();
     }
 
-    public Product findById(UUID id) {
-        Optional<Product> product = productRepository.findById(id);
-        return product.orElseThrow(() -> new ResourceNotFoundException(id));
+    public ProductResponseDTO findById(UUID id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found. Id: " + id));
+        return new ProductResponseDTO(product);
+    }
+
+    public Product findCompleteProductById(UUID id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found. Id: " + id));
     }
 
     public Product insert(Product product){
@@ -37,25 +49,25 @@ public class ProductService {
         try {
             productRepository.deleteById(id);
         }catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotFoundException(id);
+            throw new ResourceNotFoundException("Product not found. Id: " + id);
         }catch (DataIntegrityViolationException e) {
             throw new DatabaseException(e.getMessage());
         }
     }
 
-    public Product update(UUID id, Product obj) {
-        try {
-            Product product = productRepository.getReferenceById(id);
-            updateData(product, obj);
-            return productRepository.save(product);
-        }catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(id);
-        }
+    public ProductResponseDTO update(UUID id, ProductRequestDTO obj) {
+        return productRepository.findById(id)
+                .map(product -> {
+                    updateData(product, obj);
+                    Product updateProduct = productRepository.save(product);
+                    return new ProductResponseDTO(updateProduct);
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found. Id: " + id));
     }
 
-    private void updateData(Product product, Product obj) {
-        product.setName(obj.getName());
-        product.setPrice(obj.getPrice());
-        product.setProductStatus(obj.getProductStatus());
+    private void updateData(Product product, ProductRequestDTO obj) {
+        product.setName(obj.name());
+        product.setPrice(obj.price());
+        product.setProductStatus(ProductStatus.ACTIVE);
     }
 }

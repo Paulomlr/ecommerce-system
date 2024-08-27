@@ -1,7 +1,7 @@
 package com.paulomlr.ecommerceSystem.services.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
-    public ResourceNotFoundException(Object id) {
-        super("Resource not found. Id: " + id);
+    public ResourceNotFoundException(String message) {
+        super(message);
     }
 }

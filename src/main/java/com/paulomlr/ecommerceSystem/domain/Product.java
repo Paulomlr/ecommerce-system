@@ -1,5 +1,6 @@
 package com.paulomlr.ecommerceSystem.domain;
 
+import com.paulomlr.ecommerceSystem.domain.dto.product.ProductRequestDTO;
 import com.paulomlr.ecommerceSystem.domain.enums.ProductStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,23 +22,32 @@ public class Product {
     private UUID productId;
 
     @Setter
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Setter
+    @Column(nullable = false)
     private Double price;
+
+    @Column(nullable = false)
+    private Integer stockQuantity;
 
     @Setter
     private ProductStatus productStatus;
 
+    public Product(ProductRequestDTO data) {
+        this.name = data.name();
+        this.price = data.price();
+        this.stockQuantity = data.stockQuantity();
+        productStatus = ProductStatus.ACTIVE;
+    }
+
+    public Product(UUID productId, String name, Double price) {
+        this.productId = productId;
+        this.name = name;
+        this.price = price;
+    }
+
     @OneToMany(mappedBy = "id.product")
     private Set<ProductSale> items = new HashSet<>();
-
-    @ManyToMany
-    @JoinTable(name = "tb_product_category",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private Set<Category> categories = new HashSet<>();
-
-    @OneToOne(mappedBy = "product")
-    private Stock stock;
 }

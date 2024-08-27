@@ -7,31 +7,42 @@ import jakarta.persistence.Entity;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity(name = "tb_product_sale")
 @Getter
+@Setter
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class ProductSale {
 
     @EmbeddedId
+    @JsonIgnore
     private ProductSalePK id = new ProductSalePK();
 
     private Integer quantity;
-    private Double price;
 
-    public ProductSale(Product product, Sale sale, Integer quantity, Double price) {
+    public ProductSale(Product product,Integer quantity) {
+        id.setProduct(product);
+        this.quantity = quantity;
+    }
+
+    public ProductSale(Product product, Sale sale, Integer quantity){
         id.setProduct(product);
         id.setSale(sale);
         this.quantity = quantity;
-        this.price = price;
     }
 
+    @JsonIgnore
     public Sale getSale(){
         return id.getSale();
     }
 
     public Product getProduct(){
         return id.getProduct();
+    }
+
+    public Double getSubTotal() {
+        return getProduct().getPrice() * quantity;
     }
 }
