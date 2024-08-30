@@ -16,6 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode(of = "saleId")
 public class Sale {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "sale_id")
@@ -33,22 +34,14 @@ public class Sale {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Sale(UUID saleId, Instant saleDate, SaleStatus saleStatus, Set<ProductSale> items) {
-        this.saleId = saleId;
-        this.saleDate = saleDate;
-        this.saleStatus = saleStatus;
-        this.items = items;
-    }
-
-    public Sale(Instant saleDate, User user, Set<ProductSale> items) {
+    public Sale(Instant saleDate, User user, Set<ProductSale> items, SaleStatus saleStatus) {
         this.saleDate = saleDate;
         this.user = user;
         this.items = items;
-        saleStatus = SaleStatus.COMPLETED;
+        this.saleStatus = saleStatus;
     }
 
-    @Setter
-    @OneToMany(mappedBy = "id.sale", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "id.sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProductSale> items = new HashSet<>();
 
     public Double getTotal() {

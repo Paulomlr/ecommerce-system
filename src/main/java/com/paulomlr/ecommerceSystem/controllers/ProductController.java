@@ -5,8 +5,7 @@ import com.paulomlr.ecommerceSystem.domain.dto.product.ProductRequestDTO;
 import com.paulomlr.ecommerceSystem.domain.dto.product.ProductResponseDTO;
 import com.paulomlr.ecommerceSystem.services.ProductService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +13,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @RestController
 @RequestMapping("/products")
 public class ProductController {
@@ -28,7 +27,7 @@ public class ProductController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ProductResponseDTO> findById(@PathVariable @NotNull UUID id) {
+    public ResponseEntity<ProductResponseDTO> findById(@PathVariable UUID id) {
        ProductResponseDTO product = service.findById(id);
         return ResponseEntity.ok().body(product);
     }
@@ -42,13 +41,13 @@ public class ProductController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable @NotNull UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<ProductResponseDTO> update(@PathVariable @NotNull UUID id, @RequestBody @Valid ProductRequestDTO body){
+    public ResponseEntity<ProductResponseDTO> update(@PathVariable UUID id, @RequestBody @Valid ProductRequestDTO body){
         ProductResponseDTO productResponse = service.update(id, body);
         return ResponseEntity.ok().body(productResponse);
     }

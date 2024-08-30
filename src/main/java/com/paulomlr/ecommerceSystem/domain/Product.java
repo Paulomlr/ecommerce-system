@@ -6,13 +6,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
 @Entity(name = "tb_product")
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(of = "productId")
 public class Product {
 
@@ -29,23 +30,17 @@ public class Product {
     @Column(nullable = false)
     private Double price;
 
+    @Setter
     @Column(nullable = false)
     private Integer stockQuantity;
 
     @Setter
-    private ProductStatus productStatus;
+    private ProductStatus productStatus = ProductStatus.ACTIVE;
 
     public Product(ProductRequestDTO data) {
-        this.name = data.name();
+        this.name = data.name().toUpperCase(Locale.ROOT);
         this.price = data.price();
         this.stockQuantity = data.stockQuantity();
-        productStatus = ProductStatus.ACTIVE;
-    }
-
-    public Product(UUID productId, String name, Double price) {
-        this.productId = productId;
-        this.name = name;
-        this.price = price;
     }
 
     @OneToMany(mappedBy = "id.product")

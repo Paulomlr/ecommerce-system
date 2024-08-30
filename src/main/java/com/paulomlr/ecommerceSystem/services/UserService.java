@@ -1,29 +1,34 @@
 package com.paulomlr.ecommerceSystem.services;
 
-import com.paulomlr.ecommerceSystem.domain.Product;
 import com.paulomlr.ecommerceSystem.domain.User;
-import com.paulomlr.ecommerceSystem.domain.dto.product.ProductRequestDTO;
-import com.paulomlr.ecommerceSystem.domain.dto.product.ProductResponseDTO;
 import com.paulomlr.ecommerceSystem.domain.dto.user.UserRequestDTO;
 import com.paulomlr.ecommerceSystem.domain.dto.user.UserResponseDTO;
+import com.paulomlr.ecommerceSystem.domain.enums.UserRole;
 import com.paulomlr.ecommerceSystem.repositories.UserRepository;
-import com.paulomlr.ecommerceSystem.services.exceptions.DatabaseException;
 import com.paulomlr.ecommerceSystem.services.exceptions.ResourceNotFoundException;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
+import com.paulomlr.ecommerceSystem.services.exceptions.UniqueConstraintViolationException;
+import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@AllArgsConstructor
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByLogin(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Login already exists."));
+    }
 
     public List<UserResponseDTO> findAll() {
         return userRepository.findAll()
@@ -38,12 +43,26 @@ public class UserService {
         return new UserResponseDTO(user);
     }
 
-    public User findCompleteUserById(UUID id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found. Id: " + id));
+//    public User findCompleteUserById(UUID id) {
+//        return userRepository.findById(id)
+//                .orElseThrow(() -> new ResourceNotFoundException("User not found. Id: " + id));
+//    }
+
+    public User registerUser(UserRequestDTO body){
+        return createUser(body, UserRole.USER);
     }
 
-    public User insert(User user){
+    public User registerAdmin(UserRequestDTO body) {
+        return createUser(body, UserRole.ADMIN);
+    }
+
+    private User createUser(UserRequestDTO body, UserRole role) {
+        if(userRepository.findByLogin(body.login()).isPresent()) {
+            throw new UniqueConstraintViolationException("Login already exists.");
+        }
+        String encryptedPassword = new BCryptPasswordEncoder().encode(body.password());
+        User user = new User(body.login(), encryptedPassword, role);
+
         return userRepository.save(user);
     }
 
